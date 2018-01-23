@@ -10,7 +10,7 @@ class ArpDump:
 
 			
 	@staticmethod
-	def print(args):
+	def printout(args):
 		if ArpDump.do_echo:
 			print(args)
 		

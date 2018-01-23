@@ -16,13 +16,13 @@ class VMRecordReader:
 
 	def parse_arp_line(self, arp_line):
 		if len(arp_line) == 0:
-			ArpDump.print("Error: parse_arp_line: arp_line length is 0")
+			ArpDump.printout("Error: parse_arp_line: arp_line length is 0")
 			return
 
 		arp_params = arp_line.split("\t")
 		#print(arp_params)
 		if len(arp_params) != 3:
-			ArpDump.print("Error: parse_arp_line: arp_params length is not 3")
+			ArpDump.printout("Error: parse_arp_line: arp_params length is not 3")
 			return
 
 		new_vm = VMRecord(arp_params[0], arp_params[1], arp_params[2])
@@ -44,7 +44,7 @@ class VMRecordReader:
 						break
 				i += 1
 		except Exception as ex:
-			ArpDump.print("unable to perform file read")    
+			ArpDump.printout("unable to perform file read")
 		
 		return collection
 

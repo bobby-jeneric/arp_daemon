@@ -27,7 +27,7 @@ def print_err():
         for cur_line in f.readlines():
             if i > 1:
                 if len(cur_line) > 0:
-                    ArpDump.print(cur_line)
+                    ArpDump.printout(cur_line)
                 else:
                     break
             i += 1
@@ -45,7 +45,7 @@ def scan_arp():
 
     arp_reader = VMRecordReader()
     arp_collection = arp_reader.read_from_bytes(arp_output)
-    ArpDump.print(arp_collection)
+    ArpDump.printout(arp_collection)
 
 
 def run():
