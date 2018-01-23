@@ -16,7 +16,7 @@ class DBLayer:
 
 	def test_if_table_exists(self):
 		if not self.connection:
-			ArpDump.print("DBLayer: create_db: No connection established!")
+			ArpDump.printout("DBLayer: create_db: No connection established!")
 			return
 
 		c = self.connection.cursor()
@@ -25,7 +25,7 @@ class DBLayer:
 	
 	def create_db(self):
 		if not self.connection:
-			ArpDump.print("DBLayer: create_db: No connection established!")
+			ArpDump.printout("DBLayer: create_db: No connection established!")
 			return
 
 		c = self.connection.cursor()
