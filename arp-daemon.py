@@ -1,66 +1,61 @@
 #!/usr/bin/env python3
 
-"""
- import daemon
 
-
-def do_main_program():
-    print("Hello!")
-
-
-with daemon.DaemonContext():
-    do_main_program()
-"""
-
-import time
-from subprocess import check_output
+from arp_db_current import DBCurrent
+from arp_db_history import DBHistory
+from arp_db_inform import DBInform
+from arp_diffrecord import VMDiff
+from arp_inform import VMInform
+from arp_scan_scapy import ArpScanScapy
+from arp_settings import VMSettings
 from arp_vmrecord import VMRecord
-from arp_vmrecordreader import VMRecordReader
+from arp_scan_arp import ArpScanArp
 from arp_dblayer import DBLayer
 from arp_dump import ArpDump
-
-
-def print_err():
-    try:
-        f = open("arp-scan-res.txt", "r")
-        i = 0
-        for cur_line in f.readlines():
-            if i > 1:
-                if len(cur_line) > 0:
-                    ArpDump.printout(cur_line)
-                else:
-                    break
-            i += 1
-        f.close()                
-    except Exception:
-        print("unable to perform file read")
-
-
-def scan_arp():
-#    call(["ls", "-l"])
-#    print("Time:{}".format(time.ctime))
-    arp_output = None
-    #call(["arp-scan", "-l"], stdout=STDOUT)
-    arp_output = check_output(["arp-scan", "-l"])
-
-    arp_reader = VMRecordReader()
-    arp_collection = arp_reader.read_from_bytes(arp_output)
-    ArpDump.printout(arp_collection)
+import imp
 
 
 def run():
 
-    db_layer = DBLayer()
-    db_layer.connect()
-    db_layer.create_db()
-    #db_layer.test_if_table_exists()
+    # connection to database
+    DBLayer.connect()
 
-    if True:
-        #time.sleep(2)
-        scan_arp()
+    # creating (if not exists) needed tables
+    DBCurrent.create_db()
+    DBHistory.create_db()
+    DBInform.create_db()
 
-#ArpDump.set_echoing(False)
+    # reading, scanning and analyzing
+    ex_collection = DBCurrent.load_collection()
+    new_collection = ArpScanScapy.scan()
+    ArpDump.printout(new_collection)
+    diff_result = VMDiff.diff(ex_collection, new_collection)
+    if not diff_result.empty():
+        ArpDump.printout(diff_result)
+        return
+        DBCurrent.clear()
+        DBCurrent.store_collection(new_collection)
+        DBHistory.store_collection(diff_result)
+
+    #VMInform.send_an_email(VMSettings.inform_from_name, VMSettings.inform_to_list, 'Hello', 'I got an information!')
+
 
 if __name__ == "__main__":
-    run()
+    # test for local settings
+    try:
+        imp.find_module('arp_settings_local')
+        import arp_settings_local
+        arp_settings_local.imprint_locals()
+    except ImportError:
+        pass
 
+    #enable or disable echoing
+    ArpDump.set_echoing(VMSettings.echo_output)
+
+    if VMSettings.data_base_name == None or VMSettings.data_base_name == "":
+        ArpDump.printout("data_base_name is not provided")
+        exit(1)
+
+
+    #execute the daemon
+    run()

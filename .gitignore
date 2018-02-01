@@ -1,3 +1,4 @@
 __pycache__/
 arp.db
 .idea/
+arp_settings_local.py

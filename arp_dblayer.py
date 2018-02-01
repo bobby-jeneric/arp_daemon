@@ -1,40 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
-from arp_dump import ArpDump
+from arp_settings import VMSettings
 
 
 class DBLayer:
 
-	def __init__(self):
-		self.connection = None
+	connection = None
+
+	@staticmethod
+	def connect():
+		DBLayer.connection = sqlite3.connect(VMSettings.data_base_name)
 
 
-	def connect(self):
-		self.connection = sqlite3.connect('arp.db')
+	@staticmethod
+	def close():
+		DBLayer.connections.close()
+		DBLayer.connection = None
 
 
-	def test_if_table_exists(self):
-		if not self.connection:
-			ArpDump.printout("DBLayer: create_db: No connection established!")
-			return
-
-		c = self.connection.cursor()
-		c.execute('''TABLES''')
-		
-	
-	def create_db(self):
-		if not self.connection:
-			ArpDump.printout("DBLayer: create_db: No connection established!")
-			return
-
-		c = self.connection.cursor()
-		c.execute('''create table if not exists vms(ip text, mac text, name text)''')
-		self.connection.commit()
-
-
-	def close(self):
-		self.connections.close()
-		self.connection = None
-
-
+	@staticmethod
+	def is_connected():
+		return (DBLayer.connection != None)
