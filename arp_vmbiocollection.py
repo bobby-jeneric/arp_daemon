@@ -3,10 +3,10 @@
 from arp_basecollection import VMBaseCollection
 import json
 
-class VMRecordCollection(VMBaseCollection):
+class VMBioCollection(VMBaseCollection):
 
 	def __str__(self):
-		str_ret = "VMRecordCollection\n"
+		str_ret = "VMBioCollection\n"
 		str_ret += "Items count: {0}\n\n".format(len(self.collection))
 		for record in self.collection:
 			str_ret += "{0}\n---".format(record)
@@ -16,5 +16,5 @@ class VMRecordCollection(VMBaseCollection):
 	def to_json(self):
 		data = []
 		for record in self.collection:
-			data.append({'IP': record.ip, 'MAC': record.mac, 'NAME': record.name})
+			data.append({'IP': record.ip, 'DESC': record.desc})
 		return json.dumps(data)

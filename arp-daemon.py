@@ -13,6 +13,8 @@ from arp_scan_arp import ArpScanArp
 from arp_dblayer import DBLayer
 from arp_dump import ArpDump
 import imp
+import sys
+import time
 
 
 def run():
@@ -28,11 +30,11 @@ def run():
     # reading, scanning and analyzing
     ex_collection = DBCurrent.load_collection()
     new_collection = ArpScanScapy.scan()
-    ArpDump.printout(new_collection)
+    #ArpDump.printout(new_collection)
     diff_result = VMDiff.diff(ex_collection, new_collection)
     if not diff_result.empty():
-        ArpDump.printout(diff_result)
-        return
+        #ArpDump.printout(diff_result)
+        #return
         DBCurrent.clear()
         DBCurrent.store_collection(new_collection)
         DBHistory.store_collection(diff_result)
@@ -57,5 +59,15 @@ if __name__ == "__main__":
         exit(1)
 
 
-    #execute the daemon
-    run()
+    if (len(sys.argv) < 2):
+        print("use start key to start as a daemon")
+        #execute the daemon
+        run()
+        exit(0)
+
+    action = sys.argv[1]
+    if (action == "start"):
+        while True:
+            run()
+            time.sleep(1)
+
