@@ -4,6 +4,7 @@ from enum import IntEnum
 from datetime import datetime
 from arp_basecollection import VMBaseCollection
 from arp_settings import VMSettings
+import json
 
 
 class VMDiffType(IntEnum):
@@ -70,6 +71,24 @@ class VMDiffCollection(VMBaseCollection):
         for record in self.collection:
             str_ret += "{0}\n---\n".format(record)
         return str_ret
+
+    def to_json(self):
+        data = []
+        for record in self.collection:
+            data.append({'IP': record.new_rec.ip, 'MAC': record.new_rec.mac, 'NAME': record.new_rec.name,
+                         'STATUS' : record.difftype,
+                         'MACOLD' : record.ex_rec.mac if record.ex_rec else '',
+                         'NAMEOLD': record.ex_rec.name if record.ex_rec else '',
+                         'CHANGEDATE': record.date
+                         })
+        return json.dumps(data)
+
+
+class VMDiffCollectionList(VMDiffCollection):
+
+    def append(self, difftype, new_rec, ex_rec = None, changedate = None):
+        diff_rec = VMDiffRecord(difftype, new_rec, ex_rec, changedate)
+        self.collection.append(diff_rec)
 
 
 class VMDiff:

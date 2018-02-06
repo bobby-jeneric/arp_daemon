@@ -5,6 +5,8 @@ import imp
 from arp_dblayer import DBLayer
 from arp_db_current import DBCurrent
 from arp_db_bio import DBBio
+from arp_db_history import DBHistory
+
 
 try:
     imp.find_module('arp_settings_local')
@@ -68,12 +70,32 @@ class cmd_get_bio_list(cmdbase):
         exit(0)
 
 
+class cmd_get_bio(cmdbase):
+    def run(self):
+        ip = sys.argv[2]
+        bio = DBBio.find_by_ip(ip)
+        if bio == None:
+            print("{}")
+        else:
+            print(bio.to_json())
+        exit(0)
+
+
+class cmd_get_diff_list(cmdbase):
+    def run(self):
+        ex_collection = DBHistory.load_collection()
+        print(ex_collection.to_json())
+        exit(0)
+
+
 cmd_list = []
 cmd_list.append(cmd_get_current_list("get_current_list", 0))
 cmd_list.append(cmd_find_bio_by_ip("find_bio_by_ip", 1))
 cmd_list.append(cmd_set_bio_by_ip("set_bio_by_ip", 2))
 cmd_list.append(cmd_add_bio("add_bio", 2))
 cmd_list.append(cmd_get_bio_list("get_bio_list", 0))
+cmd_list.append(cmd_get_bio("get_bio", 1))
+cmd_list.append(cmd_get_diff_list("get_diff_list", 0))
 
 DBLayer.connect()
 if not DBLayer.is_connected():
@@ -82,6 +104,7 @@ if not DBLayer.is_connected():
 
 DBCurrent.create_db()
 DBBio.create_db()
+DBHistory.create_db()
 
 if (len(sys.argv) < 2):
     print("use keys to use cli")

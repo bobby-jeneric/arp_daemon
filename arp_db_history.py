@@ -2,7 +2,7 @@
 
 from arp_dblayer import DBLayer
 from arp_dump import ArpDump
-from arp_vmcollection import VMRecordCollection
+from arp_diffrecord import VMDiffCollectionList
 from arp_vmrecord import VMRecord
 
 
@@ -38,13 +38,14 @@ class DBHistory:
 		if not DBLayer.is_connected():
 			return False
 
-		collection = VMRecordCollection()
+		collection = VMDiffCollectionList()
 		try:
 			c = DBLayer.connection.cursor()
-			res = c.execute("select ip, mac, name, status, mac_old, name_old, changedate from vms_history")
+			res = c.execute("select ip, mac, name, status, mac_old, name_old, changedate from vms_history order by changedate desc")
 			for item in res:
-				item = VMRecord(item[0], item[1], item[2])
-				collection.append(item)
+				new_rec = VMRecord(item[0], item[1], item[2])
+				ex_rec = VMRecord(item[0], item[4], item[5])
+				collection.append(item[3], new_rec, ex_rec, item[6])
 		except Exception as ex:
 			ArpDump.printout("DBHistory.load_collection: unable to load collection")
 		return collection
@@ -56,6 +57,7 @@ class DBHistory:
 			return False
 
 		try:
+			ArpDump.printout("clear!")
 			c = DBLayer.connection.cursor()
 			c.execute('''delete * from vms_history''')
 			DBLayer.connection.commit()
