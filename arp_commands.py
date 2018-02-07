@@ -4,6 +4,7 @@ from arp_dblayer import DBLayer
 from arp_db_current import DBCurrent
 from arp_db_bio import DBBio
 from arp_db_history import DBHistory
+from arp_db_acts import DBAct
 
 
 class cmdbase:
@@ -72,6 +73,12 @@ class cmd_get_diff_list(cmdbase):
         return ex_collection.to_json()
 
 
+class cmd_get_act_list(cmdbase):
+    def run(self, argv):
+        ex_collection = DBAct.load_collection()
+        return ex_collection.to_json()
+
+
 class arp_commands:
     @staticmethod
     def get_commands():
@@ -83,4 +90,5 @@ class arp_commands:
         cmd_list.append(cmd_get_bio_list("get_bio_list", 0))
         cmd_list.append(cmd_get_bio("get_bio", 1))
         cmd_list.append(cmd_get_diff_list("get_diff_list", 0))
+        cmd_list.append(cmd_get_act_list("get_act_list", 0))
         return cmd_list

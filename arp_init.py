@@ -5,6 +5,7 @@ from arp_dblayer import DBLayer
 from arp_db_current import DBCurrent
 from arp_db_bio import DBBio
 from arp_db_history import DBHistory
+from arp_db_acts import DBAct
 
 
 class arp_init:
@@ -27,3 +28,4 @@ class arp_init:
         DBCurrent.create_db()
         DBBio.create_db()
         DBHistory.create_db()
+        DBAct.create_db()
