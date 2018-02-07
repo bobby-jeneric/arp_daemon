@@ -5,6 +5,8 @@ from arp_db_current import DBCurrent
 from arp_db_bio import DBBio
 from arp_db_history import DBHistory
 from arp_db_acts import DBAct
+from arp_inform import VMInform
+from arp_settings import VMSettings
 
 
 class cmdbase:
@@ -86,6 +88,15 @@ class cmd_get_act_list(cmdbase):
         return ex_collection.to_json()
 
 
+class cmd_send_an_email(cmdbase):
+    def run(self, argv):
+        ssubject = argv[2]
+        sbody = argv[3]
+        for recipient in VMSettings.inform_to_list:
+            VMInform.send_an_email(str(VMSettings.inform_from_name), str(recipient), str(ssubject), str(sbody))
+        return "{}"
+
+
 class arp_commands:
     @staticmethod
     def get_commands():
@@ -99,4 +110,5 @@ class arp_commands:
         cmd_list.append(cmd_delete_bio("delete_bio", 1))
         cmd_list.append(cmd_get_diff_list("get_diff_list", 0))
         cmd_list.append(cmd_get_act_list("get_act_list", 1))
+        cmd_list.append(cmd_send_an_email("send_an_email", 2))
         return cmd_list

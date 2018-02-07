@@ -34,6 +34,9 @@ class VMSettings:
     # scheduled time sleep between scans in seconds
     arp_daemon_scan_sleep = '60'
 
+    # type of scan used (1 - launch arp-scan command; 2 - use Scapy)
+    arp_daemon_scan_type = '2'
+
     # interface to scan
     interface_to_scan = ''
 

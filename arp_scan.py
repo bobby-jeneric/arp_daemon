@@ -15,6 +15,7 @@ from arp_db_history import DBHistory
 from arp_diffrecord import VMDiff
 from arp_commands import cmdbase
 from arp_init import arp_init
+from arp_inform import VMInform
 import json
 
 
@@ -75,7 +76,7 @@ class ArpScan:
             ArpScan.start_date = datetime.now()
 
         while True:
-            time.sleep(100.0 / 1000.0)
+            time.sleep(0.05)
             pcmd = None
 
             with ArpScan.this_lock:
@@ -165,7 +166,13 @@ class ArpScan:
 
     @staticmethod
     def scan_act2():
-        new_collection = ArpScanScapy.scan()
+        if (VMSettings.arp_daemon_scan_type == '1'):
+            new_collection = ArpScanArp.scan()
+        elif (VMSettings.arp_daemon_scan_type == '2'):
+            new_collection = ArpScanScapy.scan()
+        else:
+            new_collection = []
+
         with ArpScan.this_lock:
             ArpScan.this_stroke_collection = new_collection
             ArpDump.printout("scan_act2")
@@ -191,6 +198,7 @@ class ArpScan:
                 DBCurrent.store_collection(ArpScan.this_stroke_collection)
                 DBHistory.store_collection(diff_result)
                 ArpScan.this_stroke_act.status = 1
+                ArpScan.do_mail(diff_result)
             else:
                 ArpScan.this_stroke_act.status = 2
             # ArpDump.printout(cur_act.status)
@@ -199,3 +207,13 @@ class ArpScan:
             ArpScan.this_stroke_collection = None
             ArpScan.this_stroke_act = None
             ArpScan.start_date = datetime.now()
+
+
+    @staticmethod
+    def do_mail(diff_result):
+        try:
+            for recipient in VMSettings.inform_to_list:
+                sbody = str(diff_result)
+                VMInform.send_an_email(str(VMSettings.inform_from_name), str(recipient), "There was changes", sbody )
+        except Exception as ex:
+            ArpDump.printout("ArpScan.do_mail: unable to send mail")
