@@ -50,16 +50,20 @@ class DBAct:
 
 
 	@staticmethod
-	def load_collection():
+	def load_collection(limit):
 		if not DBLayer.is_connected():
 			return False
 
 		collection = VMActCollection()
 		try:
 			c = DBLayer.connection.cursor()
-			res = c.execute("select changedate, status, type from vms_acts order by changedate desc")
+			ilimit = int(limit)
+			if (ilimit == 0):
+				res = c.execute("select changedate, status, type from vms_acts order by changedate desc")
+			else:
+				_limit = (int(limit),)
+				res = c.execute("select changedate, status, type from vms_acts order by changedate desc limit ?", _limit)
 			for item in res:
-				print(item[1])
 				collection.append(VMAct(item[0], item[1], item[2]))
 		except Exception as ex:
 			ArpDump.printout("DBAct.load_collection: unable to load collection")

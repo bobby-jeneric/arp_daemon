@@ -26,4 +26,4 @@ class VMAct:
 
 
     def getdate(self):
-        return self.date.strftime(VMSettings.date_time_format)
+        return self.changedate.strftime(VMSettings.date_time_format)

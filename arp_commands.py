@@ -67,6 +67,13 @@ class cmd_get_bio(cmdbase):
             return bio.to_json()
 
 
+class cmd_delete_bio(cmdbase):
+    def run(self, argv):
+        ip = argv[2]
+        DBBio.delete_bio(ip)
+        return "{}"
+
+
 class cmd_get_diff_list(cmdbase):
     def run(self, argv):
         ex_collection = DBHistory.load_collection()
@@ -75,7 +82,7 @@ class cmd_get_diff_list(cmdbase):
 
 class cmd_get_act_list(cmdbase):
     def run(self, argv):
-        ex_collection = DBAct.load_collection()
+        ex_collection = DBAct.load_collection(argv[2])
         return ex_collection.to_json()
 
 
@@ -89,6 +96,7 @@ class arp_commands:
         cmd_list.append(cmd_add_bio("add_bio", 2))
         cmd_list.append(cmd_get_bio_list("get_bio_list", 0))
         cmd_list.append(cmd_get_bio("get_bio", 1))
+        cmd_list.append(cmd_delete_bio("delete_bio", 1))
         cmd_list.append(cmd_get_diff_list("get_diff_list", 0))
-        cmd_list.append(cmd_get_act_list("get_act_list", 0))
+        cmd_list.append(cmd_get_act_list("get_act_list", 1))
         return cmd_list

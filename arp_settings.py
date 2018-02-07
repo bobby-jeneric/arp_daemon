@@ -16,6 +16,7 @@ from arp_settings import VMSettings
 def imprint_locals():
     VMSettings.arp_daemon_address = 'localhost'
     VMSettings.arp_daemon_port = '10000'
+    VMSettings.arp_daemon_scan_sleep = '3600'
     VMSettings.interface_to_scan = 'eth0'
     VMSettings.ip_range = '192.168.0.0/23'
     VMSettings.data_base_name = 'arp.db'
@@ -29,6 +30,9 @@ class VMSettings:
 
     # port on which the service listens
     arp_daemon_port = ''
+
+    # scheduled time sleep between scans in seconds
+    arp_daemon_scan_sleep = '60'
 
     # interface to scan
     interface_to_scan = ''

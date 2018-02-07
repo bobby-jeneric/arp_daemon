@@ -20,6 +20,8 @@ class arp_init:
         except ImportError:
             pass
 
+    @staticmethod
+    def dbinit():
         DBLayer.connect()
         if not DBLayer.is_connected():
             print("Error: unable to establish connection")

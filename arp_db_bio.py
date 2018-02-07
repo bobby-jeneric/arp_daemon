@@ -50,6 +50,15 @@ class DBBio:
 
 
     @staticmethod
+    def delete_bio(ip):
+        c = DBLayer.connection.cursor()
+        _pack = (str(ip),)
+        c.execute("delete from vms_bio where ip=?", _pack )
+        DBLayer.connection.commit()
+        return True
+
+
+    @staticmethod
     def load_collection():
         if not DBLayer.is_connected():
             return 0

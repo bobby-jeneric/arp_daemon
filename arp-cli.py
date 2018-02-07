@@ -5,6 +5,7 @@ from arp_init import arp_init
 from arp_commands import arp_commands
 
 arp_init.init()
+arp_init.dbinit()
 
 cmd_list = arp_commands.get_commands()
 

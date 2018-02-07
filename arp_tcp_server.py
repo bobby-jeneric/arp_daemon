@@ -3,24 +3,9 @@
 import sys
 import socket
 from arp_init import arp_init
-from arp_commands import arp_commands
 from arp_settings import VMSettings
 from arp_dump import ArpDump
-
-
-def analyze(data):
-    ArpDump.printout("received: " + data)
-    cmds = data.split("|")
-    if len(cmds) > 0:
-        action = cmds[0]
-        add_keys = len(cmds) - 1
-        cmds.insert(0, "-")
-        for cmd in commands:
-            if cmd.get_cmd_name() == action:
-                if cmd.get_cmd_count() != add_keys:
-                    return "invalid amount of add keys: should be {0}".format(cmd.get_cmd_count())
-                return cmd.run(cmds)
-    return "{}"
+from arp_scan import ArpScan
 
 
 def run():
@@ -62,7 +47,7 @@ def run():
                             break
 
             if len(data_) > 0:
-                data_out = analyze(data_)
+                data_out = ArpScan.analyze(data_)
                 data_out_ = "|"
                 data_out_ += str(len(data_out))
                 data_out_ += "|"
@@ -77,8 +62,9 @@ def run():
 if __name__ == "__main__":
     arp_init.init()
 
-    ArpDump.printout("Starting the server...")
+    ArpDump.printout("Starting daemon...")
+    ArpScan.start()
 
-    commands = arp_commands.get_commands()
+    ArpDump.printout("Starting the server...")
 
     run()
