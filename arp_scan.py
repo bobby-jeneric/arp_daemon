@@ -132,13 +132,21 @@ class ArpScan:
 
         if pcmd.cmd == "get_ticks_to_go":
             tick_to_go = ArpScan.get_ticks_to_go()
-            itick = abs(int(VMSettings.arp_daemon_scan_sleep) - tick_to_go)
+            seconds = abs(int(VMSettings.arp_daemon_scan_sleep) - tick_to_go)
             startdate = ""
             with ArpScan.this_lock:
                 if ArpScan.this_stroke_act != None:
                     startdate = ArpScan.this_stroke_act.getdate()
-                    itick = tick_to_go
-            pcmd.answer = json.dumps({'TICK': itick, 'STARTDATE': startdate})
+                    seconds = tick_to_go
+            m, s = divmod(seconds, 60)
+            h, m = divmod(m, 60)
+            if (h > 0):
+                stick = "{0}:{1}:{2}".format(h, m, s)
+            elif (m > 0):
+                stick = "{0}:{1}".format(m, s)
+            else:
+                stick = ":{0}".format(s)
+            pcmd.answer = json.dumps({'TICK': stick, 'STARTDATE': startdate})
 
         if pcmd.cmd == "manual_start":
             ArpScan.scan_act1(1)
